@@ -7,8 +7,8 @@ services:
       context: .
     environment:
       # configure env vars to your liking
-      - HEIGHT=512
-      - WIDTH=512
+      - HEIGHT=1024
+      - WIDTH=1024
       - MIXED_PRECISION=no
     ports:
       - "${PUBLIC_PORT?Public port not set as an environment variable}:8000"

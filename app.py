@@ -1,6 +1,7 @@
 import os
 import time
 import uuid
+import logging
 
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
@@ -9,6 +10,8 @@ from PIL import Image
 from pydantic import BaseModel, Field
 from stable_diffusion_tf.stable_diffusion import StableDiffusion
 from tensorflow import keras
+
+logging.basicConfig(filename='docker.log', encoding='utf-8', level=logging.DEBUG)
 
 height = int(os.environ.get("WIDTH", 1024))
 width = int(os.environ.get("WIDTH", 1024))
@@ -46,7 +49,7 @@ def generate(req: GenerationRequest):
     path = os.path.join("/app/data", f"{id}.png")
     Image.fromarray(img[0]).save(path)
     alapsed = time.time() - start
-
+    logging.debug(img)
     if img:
         return GenerationResult(download_id=id, time=alapsed)
     else:
