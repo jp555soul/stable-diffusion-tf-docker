@@ -43,6 +43,7 @@ def generate(req: GenerationRequest):
     start = time.time()
     id = str(uuid.uuid4())
     img = generator.generate(req.prompt, num_steps=req.steps, unconditional_guidance_scale=req.scale, temperature=1, batch_size=1, seed=req.seed)
+    print(img)
     path = os.path.join("/app/data", f"{id}.png")
     Image.fromarray(img[0]).save(path)
     alapsed = time.time() - start
