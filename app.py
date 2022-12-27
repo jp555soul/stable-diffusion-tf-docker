@@ -10,8 +10,8 @@ from pydantic import BaseModel, Field
 from stable_diffusion_tf.stable_diffusion import StableDiffusion
 from tensorflow import keras
 
-height = int(os.environ.get("WIDTH", 512))
-width = int(os.environ.get("WIDTH", 512))
+height = int(os.environ.get("WIDTH", 1024))
+width = int(os.environ.get("WIDTH", 1024))
 mixed_precision = os.environ.get("MIXED_PRECISION", "no") == "yes"
 
 if mixed_precision:
@@ -43,12 +43,15 @@ def generate(req: GenerationRequest):
     start = time.time()
     id = str(uuid.uuid4())
     img = generator.generate(req.prompt, num_steps=req.steps, unconditional_guidance_scale=req.scale, temperature=1, batch_size=1, seed=req.seed)
-    print(img)
     path = os.path.join("/app/data", f"{id}.png")
     Image.fromarray(img[0]).save(path)
     alapsed = time.time() - start
+
+    if img:
+        return GenerationResult(download_id=id, time=alapsed)
+    else:
+        raise HTTPException(500, detail="Error")
     
-    return GenerationResult(download_id=id, time=alapsed)
 
 @app.get("/download/{id}", responses={200: {"description": "Image with provided ID", "content": {"image/png" : {"example": "No example available."}}}, 404: {"description": "Image not found"}})
 async def download(id: str):
